@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wishlist | HA Vibe</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<section class="wishlist-page">
+
+<h1>My Wishlist ❤️</h1>
+
+<div id="wishlist-items"></div>
+
+<button id="clearWishlist" class="btn">Clear Wishlist</button>
+
+<a href="shop.html" class="btn">Continue Shopping</a>
+
+</section>
+<script>
+const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+const container = document.getElementById("wishlist-items");
+
+container.innerHTML = "";
+
+if (wishlist.length === 0) {
+
+    container.innerHTML = "<h3>No items in your wishlist.</h3>";
+
+} 
+
+else {
+
+    wishlist.forEach(product => {
+
+        container.innerHTML += `
+            <div class="wishlist-card">
+                <img src="${product.image}" alt="${product.name}" width="180">
+                <h3>${product.name}</h3>
+                <p>${product.color ? "Color: " + product.color : ""}</p><p>Rs. ${product.price}</p>
+            </div>
+        `;
+
+    });
+
+}
+</script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Checkout | HA Vibe</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head>
+<body><header><nav class="navbar"><div class="logo">H<span>A</span> Vibe</div><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li><li><a href="cart.html">Cart</a></li><li><a href="contact.html">Contact</a></li></ul><a href="cart.html" class="btn">Back to Cart</a></nav></header>
+<main class="checkout-page"><div class="page-heading"><p>SECURE ORDER REQUEST</p><h1>Checkout</h1><span>Complete your details. Your order will be sent directly to HA Vibe on WhatsApp for confirmation.</span></div>
+<div class="checkout-grid"><form id="checkout-form" class="checkout-form"><h2>Delivery Details</h2>
+<label>Full Name<input id="customer-name" required type="text" placeholder="Your full name"></label>
+<label>Phone Number<input id="customer-phone" required type="tel" placeholder="03XX XXXXXXX"></label>
+<label>Email (optional)<input id="customer-email" type="email" placeholder="you@example.com"></label>
+<label>City<input id="customer-city" required type="text" placeholder="Your city"></label>
+<label>Complete Address<textarea id="customer-address" required rows="4" placeholder="House / street / area"></textarea></label>
+<label>Order Notes (optional)<textarea id="customer-notes" rows="3" placeholder="Any special instructions"></textarea></label>
+<div class="payment-note"><strong>Payment / delivery confirmation</strong><p>HA Vibe will confirm payment and delivery details with you directly after receiving the order.</p></div>
+<button class="btn place-order-btn" type="submit">Place Order on WhatsApp</button></form>
+<aside class="order-review"><h2>Order Summary</h2><div id="checkout-items"></div><div class="checkout-total"><span>Total</span><strong id="checkout-total">Rs. 0</strong></div></aside></div></main>
+<script src="script.js"></script><script>
+const checkoutCart=getList("cart"), checkoutItems=document.getElementById("checkout-items");
+if(!checkoutCart.length){location.href="cart.html";}
+let checkoutTotal=0;
+checkoutCart.forEach(item=>{const q=item.quantity||1;checkoutTotal+=Number(item.price)*q;checkoutItems.innerHTML+=`<div class="checkout-item"><img src="${item.image}" alt="${item.name}"><div><strong>${item.name}</strong><span>${item.color} · Size ${item.size} · Qty ${q}</span></div><b>${money(Number(item.price)*q)}</b></div>`;});
+document.getElementById("checkout-total").textContent=money(checkoutTotal);
+document.getElementById("checkout-form").addEventListener("submit",e=>{
+ e.preventDefault();
+ const orderId="HAV-"+Date.now().toString().slice(-7);
+ const customer={name:document.getElementById("customer-name").value.trim(),phone:document.getElementById("customer-phone").value.trim(),email:document.getElementById("customer-email").value.trim(),city:document.getElementById("customer-city").value.trim(),address:document.getElementById("customer-address").value.trim(),notes:document.getElementById("customer-notes").value.trim()};
+ const lines=checkoutCart.map((item,i)=>`${i+1}. ${item.name}\nColor: ${item.color}\nSize: ${item.size}\nQty: ${item.quantity||1}\nPrice: ${money(Number(item.price)*(item.quantity||1))}`).join("\n\n");
+ const message=`*NEW HA VIBE ORDER*\nOrder ID: ${orderId}\n\n*Customer Details*\nName: ${customer.name}\nPhone: ${customer.phone}\nEmail: ${customer.email||"Not provided"}\nCity: ${customer.city}\nAddress: ${customer.address}\n\n*Order Items*\n${lines}\n\n*TOTAL: ${money(checkoutTotal)}*\n\nNotes: ${customer.notes||"None"}\n\nPlease confirm my order.`;
+ const order={id:orderId,customer,items:checkoutCart,total:checkoutTotal,createdAt:new Date().toISOString(),status:"Pending WhatsApp confirmation"};
+ localStorage.setItem("lastOrder",JSON.stringify(order));
+ window.open(`https://wa.me/${STORE.phone}?text=${encodeURIComponent(message)}`,"_blank");
+ localStorage.removeItem("cart");
+ setTimeout(()=>location.href=`order-success.html?id=${encodeURIComponent(orderId)}`,500);
+});
+</script></body></html>

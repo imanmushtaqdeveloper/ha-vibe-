@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Shopping Cart | HA Vibe</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head>
+<body><header><nav class="navbar"><div class="logo">H<span>A</span> Vibe</div><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li><li><a href="custom.html">Custom Shirts</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul><a href="shop.html" class="btn">Continue Shopping</a></nav></header>
+<main class="cart-page professional-cart"><div class="page-heading"><p>YOUR BAG</p><h1>Shopping Cart</h1></div><div id="cart-items"></div>
+<div class="cart-summary"><div><span>Order Total</span><strong id="cart-total">Rs. 0</strong></div><button class="btn checkout-btn" onclick="checkout()">Proceed to Checkout</button></div></main>
+<script src="script.js"></script><script>
+function renderCart(){
+ const cart=getList("cart"), container=document.getElementById("cart-items");
+ if(!cart.length){container.innerHTML='<div class="empty-state"><h2>Your cart is empty</h2><p>Explore HA Vibe and find your next statement tee.</p><a class="btn" href="shop.html">Shop Collection</a></div>';document.querySelector(".cart-summary").style.display="none";return;}
+ let total=0; container.innerHTML="";
+ cart.forEach((item,index)=>{const q=item.quantity||1; total+=Number(item.price)*q; container.innerHTML+=`<article class="cart-card"><img src="${item.image}" alt="${item.name}"><div class="cart-info"><h3>${item.name}</h3><p>${item.color||""} ${item.size?"· Size "+item.size:""}</p><strong>${money(item.price)}</strong></div><div class="quantity-control"><button onclick="changeQty(${index},-1)">−</button><span>${q}</span><button onclick="changeQty(${index},1)">+</button></div><button class="remove-item" onclick="removeItem(${index})">Remove</button></article>`;});
+ document.getElementById("cart-total").textContent=money(total);
+}
+function changeQty(index,change){const cart=getList("cart");cart[index].quantity=Math.max(1,(cart[index].quantity||1)+change);saveList("cart",cart);renderCart();}
+function removeItem(index){const cart=getList("cart");cart.splice(index,1);saveList("cart",cart);renderCart();}
+renderCart();
+</script></body></html>
